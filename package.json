@@ -1,0 +1,36 @@
+{
+  "name": "mern",
+  "version": "1.0.0",
+  "description": "it is backend application where we will install and preprapre data to work with back end ",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malikrajat/mern-back-end.git"
+  },
+  "keywords": [
+    "mern"
+  ],
+  "author": "Rajat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/malikrajat/mern-back-end/issues"
+  },
+  "homepage": "https://github.com/malikrajat/mern-back-end#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.6",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "validator": "^13.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
