@@ -124,7 +124,7 @@ router.delete(
 // @access  public
 
 router.post(
-  "like/:id",
+  "/like/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     error = {};
@@ -149,6 +149,106 @@ router.post(
           );
       })
       .catch(err => res.json(err));
+  }
+);
+
+// @router  POST api/posts/unlike/:id
+// @desc    Unlike post
+// @access  public
+
+router.post(
+  "/unlike/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    error = {};
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        Post.findById(req.params.id)
+          .then(post => {
+            if (
+              post.likes.filter(like => like.user.id.toString() === req.user.id)
+                .length === 0
+            ) {
+              return res
+                .status(400)
+                .json({ notliked: "you have not liked post yet." });
+            }
+            // get removed liked post
+            const removeIndex = post.likes
+              .map(item => item.user.toString())
+              .indexOf(req.user.id);
+
+            //splice out of array
+            post.likes.splice(removeIndex, 1);
+            //save
+            Post.save().then(post => res.json(post));
+          })
+          .catch(err =>
+            res.status(404).json({ postnotfound: "No Post Found." })
+          );
+      })
+      .catch(err => res.json(err));
+  }
+);
+
+// @router  POST api/posts/comment/:id
+// @desc    add comment to post
+// @access  public
+
+router.post(
+  "/comment/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findById(req.params.id)
+      .then(post => {
+        const newComment = {
+          text: req.body.text,
+          name: req.body.name,
+          avatar: req.body.avatar,
+          user: req.user.id
+        };
+
+        //add to comment array
+        post.comments.unshift(newComment);
+
+        //save
+        Post.save().then(post => res.json(post));
+      })
+      .catch(er => res.status(404).json(er));
+  }
+);
+
+// @router  DELETE api/posts/comment/:id/commnet_id
+// @desc    delete comment to post
+// @access  public
+
+router.delete(
+  "/comment/:id/:comment_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findById(req.params.id)
+      .then(post => {
+        //check if the comment exists
+        if (
+          post.comments.filter(
+            comment => comment._id.toString() === req.params.comment._id
+          ).length === 0
+        ) {
+          return res
+            .status(404)
+            .json({ commentexists: "comment do not exists" });
+        }
+        //get removed index
+        const removeIndex = post.comments
+          .map(items => items._id.toString())
+          .indexOf(req.params.comment_id);
+
+        //splice it from array
+
+        post.comments.splice(removeIndex, 1);
+        Post.save().then(post => res.json(post));
+      })
+      .catch(er => res.status(404).json(er));
   }
 );
 
