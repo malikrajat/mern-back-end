@@ -19,7 +19,7 @@ router.get("/test", (req, res) => {
   });
 });
 
-// @router  GET api/users/register
+// @router  POST api/users/register
 // @desc    Register User
 // @access  public
 
@@ -67,7 +67,7 @@ router.post("/register", (req, res) => {
   );
 });
 
-// @router  GET api/users/login
+// @router  POST api/users/login
 // @desc    Login User / Returning JWT Token
 // @access  public
 
