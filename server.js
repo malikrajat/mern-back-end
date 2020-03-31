@@ -4,9 +4,13 @@ const profile = require("./routes/api/profile");
 const users = require("./routes/api/users");
 const posts = require("./routes/api/posts");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const passport = require("passport");
 const db = require("./config/keys").mongoURI;
 const app = express();
+
+// app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
