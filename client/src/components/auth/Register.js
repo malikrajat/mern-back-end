@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import classnames from "classnames";
 
 class Register extends Component {
@@ -31,15 +31,16 @@ class Register extends Component {
       password2: this.state.password2
     };
 
-    axios
-      .post("/api/users/register", newUser)
+    axiosInstance
+      .post("api/users/register", newUser)
       .then(res => console.log(res.data))
-      .catch(err => this.setState({ errors: err.response.data }));
+      .catch(err => {
+        this.setState({ errors: err.response.data });
+      });
   }
 
   render() {
     const { errors } = this.state;
-
     return (
       <div className="register">
         <div className="container">
@@ -49,6 +50,7 @@ class Register extends Component {
               <p className="lead text-center">
                 Create your DevConnector account
               </p>
+
               <form noValidate onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <input
