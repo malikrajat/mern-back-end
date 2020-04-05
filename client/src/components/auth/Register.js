@@ -1,6 +1,9 @@
 import React, { Component } from "react";
-import axiosInstance from "../../config/axios-config";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
 
 class Register extends Component {
   constructor() {
@@ -10,11 +13,23 @@ class Register extends Component {
       email: "",
       password: "",
       password2: "",
-      errors: {}
+      errors: {},
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
   }
 
   onChange(e) {
@@ -28,19 +43,15 @@ class Register extends Component {
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
-      password2: this.state.password2
+      password2: this.state.password2,
     };
 
-    axiosInstance
-      .post("api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err => {
-        this.setState({ errors: err.response.data });
-      });
+    this.props.registerUser(newUser, this.props.history);
   }
 
   render() {
     const { errors } = this.state;
+
     return (
       <div className="register">
         <div className="container">
@@ -50,13 +61,12 @@ class Register extends Component {
               <p className="lead text-center">
                 Create your DevConnector account
               </p>
-
               <form noValidate onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <input
                     type="text"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.name
+                      "is-invalid": errors.name,
                     })}
                     placeholder="Name"
                     name="name"
@@ -71,7 +81,7 @@ class Register extends Component {
                   <input
                     type="email"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.email
+                      "is-invalid": errors.email,
                     })}
                     placeholder="Email Address"
                     name="email"
@@ -90,7 +100,7 @@ class Register extends Component {
                   <input
                     type="password"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.password
+                      "is-invalid": errors.password,
                     })}
                     placeholder="Password"
                     name="password"
@@ -105,7 +115,7 @@ class Register extends Component {
                   <input
                     type="password"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.password2
+                      "is-invalid": errors.password2,
                     })}
                     placeholder="Confirm Password"
                     name="password2"
@@ -126,4 +136,15 @@ class Register extends Component {
   }
 }
 
-export default Register;
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  errors: state.errors,
+});
+
+export default connect(mapStateToProps, { registerUser })(withRouter(Register));
