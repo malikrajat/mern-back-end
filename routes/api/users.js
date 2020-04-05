@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.get("/test", (req, res) => {
   res.json({
-    msg: "Users works"
+    msg: "Users works",
   });
 });
 
@@ -31,9 +31,9 @@ router.post("/register", (req, res) => {
     return res.status(400).json(error);
   }
   Users.findOne({
-    email: req.body.email
+    email: req.body.email,
   }).then(
-    usre => {
+    (usre) => {
       if (usre) {
         error.email = "Email already exists";
         return res.status(400).json(error);
@@ -41,13 +41,13 @@ router.post("/register", (req, res) => {
         const avatar = gravatar.url(req.body.email, {
           s: "200", // size
           r: "pg", // Rating
-          d: "mm" // Default
+          d: "mm", // Default
         });
         const newUser = new Users({
           name: req.body.name,
           email: req.body.email,
           avatar,
-          password: req.body.password
+          password: req.body.password,
         });
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -55,13 +55,13 @@ router.post("/register", (req, res) => {
             newUser.password = hash;
             newUser
               .save()
-              .then(usr => res.json(usr))
-              .catch(err => console.log(err));
+              .then((usr) => res.json(usr))
+              .catch((err) => console.log(err));
           });
         });
       }
     },
-    err => {
+    (err) => {
       console.log("Error while calling email verfication.");
     }
   );
@@ -72,22 +72,22 @@ router.post("/register", (req, res) => {
 // @access  public
 
 router.post("/login", (req, res) => {
-  const { error, isValid } = validateLoginInput(req.body);
+  const { errors, isValid } = validateLoginInput(req.body);
 
   //check for validation
   if (!isValid) {
-    return res.status(400).json(error);
+    return res.status(400).json(errors);
   }
   const email = req.body.email;
   const password = req.body.password;
-  Users.findOne({ email }).then(user => {
+  Users.findOne({ email }).then((user) => {
     // check for user
     if (!user) {
-      error.email = "User not found";
-      return res.status().json(error);
+      errors.email = "User not found";
+      return res.status().json(errors);
     }
     //check for password
-    bcrypt.compare(password, user.password).then(isMatch => {
+    bcrypt.compare(password, user.password).then((isMatch) => {
       if (isMatch) {
         // user Match
         const payload = { id: user.id, name: user.name, avatar: user.avatar }; // create jwt token
@@ -95,12 +95,12 @@ router.post("/login", (req, res) => {
         jwt.sign(payload, keys.screteKey, { expiresIn: 3600 }, (err, token) => {
           res.json({
             success: true,
-            token: "Bearer " + token
+            token: "Bearer " + token,
           });
         });
       } else {
-        error.password = "Password is uncorrect.";
-        return res.status(400).json(error);
+        errors.password = "Password is uncorrect.";
+        return res.status(400).json(errors);
       }
     });
   });
