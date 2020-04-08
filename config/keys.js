@@ -1,5 +1,5 @@
-module.exports = {
-  mongoURI:
-    "mongodb+srv://test:k3WWEzVovPYpQg8g@place-demo-vmmnt.mongodb.net/test?retryWrites=true&w=majority",
-  screteKey: "screte"
-};
+if (process.env.NODE_ENV === 'production') {
+  module.exports = require('./keys_prod');
+} else {
+  module.exports = require('./keys_dev');
+}
